@@ -1,6 +1,6 @@
 Import("env")
 flags = [
    "-mfloat-abi=hard",
-   "-mfpu=fpv4-sp-d16"
+   "-mfpu=fpv5-d16"
 ]
 env.Append(CCFLAGS=flags, LINKFLAGS=flags)
