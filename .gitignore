@@ -1,0 +1,4 @@
+external/qspi
+external/imu
+external/i2c-mux
+.pio
