@@ -1,0 +1,9 @@
+[submodule "external/qspi"]
+	path = external/qspi
+	url = https://github.com/Crazy-Geeks/STM32-W25Q-QSPI
+[submodule "external/imu"]
+	path = external/imu
+	url = https://github.com/ivyknob/bno055_stm32
+[submodule "external/i2c-mux"]
+	path = external/i2c-mux
+	url = https://github.com/jtainer/i2c-mux
