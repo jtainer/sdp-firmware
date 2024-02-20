@@ -4,3 +4,6 @@
 [submodule "external/imu"]
 	path = external/imu
 	url = https://github.com/ivyknob/bno055_stm32
+[submodule "external/i2c-mux"]
+	path = external/i2c-mux
+	url = https://github.com/jtainer/i2c-mux
