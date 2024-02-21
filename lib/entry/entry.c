@@ -60,7 +60,6 @@ void setup(void) {
 	}
 	
 	// Detect which channels have an IMU connected
-	bno055_assignI2C(&hi2c1);
 	for (int i = 0; i < IMU_COUNT; i++) {
 		select_imu(i);
 		HAL_StatusTypeDef status = HAL_I2C_IsDeviceReady(&hi2c1, BNO055_I2C_ADDR<<1, 5, 100);
@@ -84,6 +83,15 @@ void setup(void) {
 	}
 	else {
 		printf("INFO: Proceeding with %d IMUs\r\n", active_imu_count);
+	}
+	// Initialize IMUs
+	bno055_assignI2C(&hi2c1);
+	for (int i = 0; i < IMU_COUNT; i++) {
+		if (!imu_detected[i]) continue;
+		select_imu(i);
+		bno055_reset();
+		bno055_setup();
+		bno055_setOperationModeNDOF();
 	}
 }
 
