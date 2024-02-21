@@ -469,11 +469,7 @@ static void MX_GPIO_Init(void)
 // Override _write definition so stdout is directed to USB
 int _write(int file, char* ptr, int len) {
 	// Block until USB port is available for transmitting
-	extern USBD_HandleTypeDef hUsbDeviceFS;
-	USBD_CDC_HandleTypeDef* hcdc = (USBD_CDC_HandleTypeDef*)hUsbDeviceFS.pClassData;
-	while (hcdc->TxState != 0) asm("nop");
-	// Begin transmission
-	CDC_Transmit_FS((uint8_t*) ptr, len);
+	while (CDC_Transmit_FS((uint8_t*) ptr, len) == USBD_BUSY);
 	return len;
 }
 /* USER CODE END 4 */
