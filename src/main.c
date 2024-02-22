@@ -24,6 +24,7 @@
 /* USER CODE BEGIN Includes */
 #include "usbd_cdc_if.h"
 #include "stdio.h"
+#include "stdint.h"
 #include "entry.h"
 /* USER CODE END Includes */
 
@@ -34,7 +35,7 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-
+#define USB_WRITE_TIMEOUT_MS 5
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -467,10 +468,9 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 // Override _write definition so stdout is directed to USB
-int _write(int file, char* ptr, int len) {
-	// Block until USB port is available for transmitting
-	while (CDC_Transmit_FS((uint8_t*) ptr, len) == USBD_BUSY);
-	return len;
+int _write(int file, char *ptr, int len) {
+    HAL_UART_Transmit(&huart1, (uint8_t*) ptr, len, 10);
+    return len;
 }
 /* USER CODE END 4 */
 
