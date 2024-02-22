@@ -51,7 +51,7 @@ void setup(void) {
 	else {
 		printf("INFO: Successfully initialized mux[0]\r\n");
 	}
-	if (i2c_mux_reset(&mux[0]) != 0) {
+	if (i2c_mux_reset(&mux[1]) != 0) {
 		printf("ERROR: Failed to initialize mux[1]\r\n");
 		Error_Handler();
 	}
