@@ -93,6 +93,32 @@ void setup(void) {
 		bno055_setup();
 		bno055_setOperationModeNDOF();
 	}
+
+	// Initialize QSPI flash
+	if (W25Q_Init() == W25Q_OK) {
+		printf("INFO: Successfully initialized external flash\r\n");
+	}
+	else {
+		printf("ERROR: Failed to initialize external flash\r\n");
+		Error_Handler();
+	}
+
+	// Test writing/reading
+	W25Q_EraseSector(0);
+	uint8_t tx_byte = 123;
+	uint8_t addr = 0;
+	uint32_t page = 0;
+	W25Q_EraseSector(0);
+	W25Q_ProgramByte(tx_byte, addr, page);
+	uint8_t rx_byte = 0;
+	W25Q_ReadByte(&rx_byte, addr, page);
+	if (tx_byte == rx_byte) {
+		printf("INFO: Successfully programmed flash\r\n");
+	}
+	else {
+		printf("ERROR: Failed to program flash\r\n");
+		Error_Handler();
+	}
 }
 
 void loop(void) {
