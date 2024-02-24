@@ -111,7 +111,7 @@ void setup(void) {
 		printf("ERROR: Failed to initialize external flash\r\n");
 		Error_Handler();
 	}
-
+/*
 	// Test writing/reading
 	flash_status = W25Q_EraseSector(0);
 	if (flash_status == W25Q_OK) {
@@ -145,6 +145,7 @@ void setup(void) {
 		printf("ERROR: Received byte (%d) does not match programmed byte (%d)\r\n", (int) rx_byte, (int) tx_byte);
 		Error_Handler();
 	}
+*/
 }
 
 void loop(void) {
