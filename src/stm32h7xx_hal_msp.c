@@ -207,7 +207,7 @@ void HAL_QSPI_MspInit(QSPI_HandleTypeDef* hqspi)
   */
     PeriphClkInitStruct.PeriphClockSelection = RCC_PERIPHCLK_QSPI;
     PeriphClkInitStruct.PLL2.PLL2M = 32;
-    PeriphClkInitStruct.PLL2.PLL2N = 128;
+    PeriphClkInitStruct.PLL2.PLL2N = 192;
     PeriphClkInitStruct.PLL2.PLL2P = 2;
     PeriphClkInitStruct.PLL2.PLL2Q = 2;
     PeriphClkInitStruct.PLL2.PLL2R = 2;
