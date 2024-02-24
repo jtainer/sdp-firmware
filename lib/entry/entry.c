@@ -146,6 +146,17 @@ void setup(void) {
 		Error_Handler();
 	}
 */
+
+	// Test user inputs
+	printf("\tTesting user inputs:\r\n");
+	for (int i = 0; i < 5; i++) {
+		printf("Press and release SW%d... ", i);
+		while (!read_button(i));
+		HAL_Delay(10); // Hacky debounce
+		while (read_button(i));
+		printf("done\r\n");
+	}
+	printf("INFO: Successfully tested all user inputs\r\n");
 }
 
 void loop(void) {
