@@ -28,6 +28,13 @@ int select_imu(int channel) {
 	return err;
 }
 
+bool read_button(int channel) {
+	if (channel < 0 || channel > 4) return false;
+	GPIO_TypeDef* port[5] = { USER0_GPIO_Port, USER1_GPIO_Port, USER2_GPIO_Port, USER3_GPIO_Port, USER4_GPIO_Port };
+	uint16_t pin[5] = { USER0_Pin, USER1_Pin, USER2_Pin, USER3_Pin, USER4_Pin };
+	return HAL_GPIO_ReadPin(port[channel], pin[channel]);
+}
+
 void setup(void) {
 	// Initialize multiplexers
 	mux[0].hi2c = &hi2c1;
