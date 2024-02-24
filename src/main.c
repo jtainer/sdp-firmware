@@ -443,7 +443,7 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Pin = USER0_Pin|USER1_Pin|USER2_Pin|USER3_Pin
                           |USER4_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
   /*Configure GPIO pins : MUX0_A0_Pin MUX0_A1_Pin MUX0_A2_Pin MUX1_A0_Pin
