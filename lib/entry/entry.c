@@ -95,7 +95,9 @@ void setup(void) {
 	}
 
 	// Initialize QSPI flash
-	if (W25Q_Init() == W25Q_OK) {
+	W25Q_STATE flash_status = 0;
+	flash_status = W25Q_Init();
+	if (flash_status == W25Q_OK) {
 		printf("INFO: Successfully initialized external flash\r\n");
 	}
 	else {
@@ -104,19 +106,36 @@ void setup(void) {
 	}
 
 	// Test writing/reading
-	W25Q_EraseSector(0);
+	flash_status = W25Q_EraseSector(0);
+	if (flash_status == W25Q_OK) {
+		printf("INFO: Successfully erased flash sector 0\r\n");
+	}
+	else {
+		printf("ERROR: Failed to erase flash sector 0\r\n");
+		Error_Handler();
+	}
 	uint8_t tx_byte = 123;
 	uint8_t addr = 0;
 	uint32_t page = 0;
-	W25Q_EraseSector(0);
-	W25Q_ProgramByte(tx_byte, addr, page);
-	uint8_t rx_byte = 0;
-	W25Q_ReadByte(&rx_byte, addr, page);
-	if (tx_byte == rx_byte) {
-		printf("INFO: Successfully programmed flash\r\n");
+	flash_status = W25Q_ProgramByte(tx_byte, addr, page);
+	if (flash_status == W25Q_OK) {
+		printf("INFO: Successfully programmed byte %d to flash\r\n", (int) tx_byte);
 	}
 	else {
 		printf("ERROR: Failed to program flash\r\n");
+		Error_Handler();
+	}
+	uint8_t rx_byte = 0;
+	W25Q_ReadByte(&rx_byte, addr, page);
+	if (flash_status == W25Q_OK) {
+		printf("INFO: Read byte %d from flash\r\n", (int) rx_byte);
+	}
+	else {
+		printf("ERROR: Failed to read from flash\r\n");
+		Error_Handler();
+	}
+	if (tx_byte != rx_byte) {
+		printf("ERROR: Received byte (%d) does not match programmed byte (%d)\r\n", (int) rx_byte, (int) tx_byte);
 		Error_Handler();
 	}
 }
