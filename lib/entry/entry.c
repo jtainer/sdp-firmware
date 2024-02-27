@@ -12,6 +12,7 @@
 #include <i2c-mux.h>
 #include <Library/w25q_mem.h>
 #include <bno055_stm32.h>
+#include <ssd1306.h>
 
 extern I2C_HandleTypeDef hi2c1;
 #define IMU_COUNT 16
@@ -146,7 +147,7 @@ void setup(void) {
 		Error_Handler();
 	}
 */
-
+/*
 	// Test user inputs
 	printf("\tTesting user inputs:\r\n");
 	for (int i = 0; i < 5; i++) {
@@ -157,6 +158,10 @@ void setup(void) {
 		printf("done\r\n");
 	}
 	printf("INFO: Successfully tested all user inputs\r\n");
+*/
+
+	// Setup OLED
+	ssd1306_Init();
 }
 
 void loop(void) {
@@ -166,6 +171,10 @@ void loop(void) {
 		bno055_vector_t v = bno055_getVectorQuaternion();
 		printf("\tIMU[%d]: w=%f,\tx=%f,\ty=%f,\tz=%f\r\n", i, v.w, v.x, v.y, v.z);
 	}
+
+	ssd1306_Fill(Black);
+	ssd1306_DrawCircle(64, 32, 10, White);
+	ssd1306_UpdateScreen();
 
 	HAL_Delay(1000);
 }
