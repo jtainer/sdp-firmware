@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <i2c-mux.h>
-#include <Library/w25q_mem.h>
+#include <w25q_mem.h>
 #include <bno055_stm32.h>
 #include <ssd1306.h>
 
