@@ -29,22 +29,28 @@
 #include <main.h>
 #include <stdio.h>
 #include <string.h>
+#include <Library/w25q_mem.h>
 #include "loader.h"
 
-#define RX_BUFFER_SIZE 4096
 #define LD_ACK "loader_rx_cplt\n"
 #define LD_NACK "loader_rx_fail\n"
 
+// Buffer incoming messages until a full line is received
+#define RX_BUFFER_SIZE 4096
 static uint8_t rx_buf[RX_BUFFER_SIZE] = { 0 };
 static int rx_idx = 0;
 static bool rx_full = false;
 extern UART_HandleTypeDef huart1;
 
-// Buffer for loaded data
+// Buffer data before writing to flash
 #define LD_BUFFER_SIZE 1024
 uint8_t ld_buf[LD_BUFFER_SIZE] = { 0 };
+// Loader buffer working address
 static int ld_idx = 0;
-static bool ld_cplt = false;
+static volatile bool ld_cplt = false;
+
+// Flash working address
+static int fl_idx = 0;
 
 void loader_listen(bool enable) {
 	ld_idx = 0;
@@ -58,6 +64,9 @@ uint8_t* loader_data() {
 }
 
 void loader_program_flash() {
+	ld_cplt = false;
+	loader_listen(true);
+	while (!ld_cplt);
 }
 
 void decode_hex(uint8_t* dst, uint8_t* src, int num_bytes) {
@@ -81,9 +90,9 @@ void process_packet() {
 	if (msg_len < 1) return;
 	// Set loader buffer working address
 	else if (rx_buf[0] == 's') {
-		int ld_idx_tmp = 0;
-		if (sscanf((char*)(rx_buf+1), "%d", &ld_idx_tmp) == 1) {
-			ld_idx = ld_idx_tmp;
+		int idx = 0;
+		if (sscanf((char*)(rx_buf+1), "%d", &idx) == 1) {
+			ld_idx = idx;
 		}
 	}
 	// Write to loader buffer
@@ -93,15 +102,24 @@ void process_packet() {
 	}
 	// Set flash working address
 	else if (rx_buf[0] == 'S') {
-	
+		int idx = 0;
+		if (sscanf((char*)(rx_buf+1), "%d", &idx) == 1) {
+			fl_idx = idx;
+		}
 	}
 	// Erase flash sector
 	else if (rx_buf[0] == 'X') {
-	
+		int addr = 0;
+		if (sscanf((char*)(rx_buf+1), "%d", &addr) == 1) {
+			W25Q_EraseSector(addr);
+		}
 	}
 	// Copy loader buffer into flash
 	else if (rx_buf[0] == 'M') {
-	
+		int len = 0;
+		if (sscanf((char*)(rx_buf+1), "%d", &len) == 1) {
+			W25Q_ProgramRaw(ld_buf, len, fl_idx);
+		}
 	}
 	// Done programming
 	else if (rx_buf[0] == 'Z') {
@@ -120,11 +138,11 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
 			process_packet();
 
 			// Tell host to proceed
-//			HAL_UART_Transmit(&huart1, (uint8_t*)LD_ACK, strlen(LD_ACK)+1, 100);
+			HAL_UART_Transmit(&huart1, (uint8_t*)LD_ACK, strlen(LD_ACK)+1, 100);
 		}
 		else {
 			// Tell host to abort or retransmit last line
-//			HAL_UART_Transmit(&huart1, (uint8_t*)LD_NACK, strlen(LD_NACK)+1, 100);
+			HAL_UART_Transmit(&huart1, (uint8_t*)LD_NACK, strlen(LD_NACK)+1, 100);
 		}
 
 		// Reset and wait for next line
@@ -150,6 +168,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef* huart) {
 	}
 
 	// Call this function after every byte is received
-	HAL_UART_Receive_IT(&huart1, &rx_buf[rx_idx], 1);
+	if (!ld_cplt) {
+		HAL_UART_Receive_IT(&huart1, &rx_buf[rx_idx], 1);
+	}
 }
 
