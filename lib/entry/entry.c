@@ -19,6 +19,7 @@ extern I2C_HandleTypeDef hi2c1;
 
 i2c_mux_t mux[2] = { 0 };
 bool imu_detected[IMU_COUNT] = { 0 };
+bool imu_alt_addr[IMU_COUNT] = { 0 };
 
 int select_imu(int channel) {
 	int mux_idx = (channel & 0b1000) >> 3;
@@ -69,11 +70,17 @@ void setup(void) {
 	
 	// Detect which channels have an IMU connected
 	for (int i = 0; i < IMU_COUNT; i++) {
+		const int attempts = 10;
+		const int timeout = 100; // milliseconds
 		select_imu(i);
-		HAL_StatusTypeDef status = HAL_I2C_IsDeviceReady(&hi2c1, BNO055_I2C_ADDR<<1, 5, 100);
-		if (status == HAL_OK) {
+		if (HAL_I2C_IsDeviceReady(&hi2c1, BNO055_I2C_ADDR_LO<<1, attempts, timeout) == HAL_OK) {
 			printf("INFO: IMU detected on channel %d\r\n", i);
 			imu_detected[i] = true;
+			imu_alt_addr[i] = false;
+		}
+		else if (HAL_I2C_IsDeviceReady(&hi2c1, BNO055_I2C_ADDR_HI<<1, attempts, timeout) == HAL_OK) {
+			imu_detected[i] = true;
+			imu_alt_addr[i] = true;
 		}
 		else {
 			printf("INFO: No response on channel %d\r\n", i);
