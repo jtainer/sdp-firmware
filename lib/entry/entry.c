@@ -22,6 +22,8 @@ bool imu_detected[IMU_COUNT] = { 0 };
 bool imu_alt_addr[IMU_COUNT] = { 0 };
 
 int select_imu(int channel) {
+	uint16_t addr = imu_alt_addr[channel] ? BNO055_I2C_ADDR_HI : BNO055_I2C_ADDR_LO;
+	bno055_assignAddr(addr);
 	int mux_idx = (channel & 0b1000) >> 3;
 	int imu_idx = channel & 0b0111;
 	int err = i2c_mux_select(&mux[mux_idx], imu_idx);
