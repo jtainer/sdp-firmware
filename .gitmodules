@@ -1,6 +1,3 @@
 [submodule "external/i2c-mux"]
 	path = external/i2c-mux
 	url = https://github.com/jtainer/i2c-mux
-[submodule "external/oled"]
-	path = external/oled
-	url = https://github.com/afiskon/stm32-ssd1306
